@@ -5,7 +5,9 @@ plugins {
 }
 
 group = "ewc.openspec"
-version = "1.0.0"
+version = providers.exec {
+    commandLine("git", "describe", "--tags", "--abbrev=0")
+}.standardOutput.asText.map { it.trim().removePrefix("v") }.getOrElse("0.0.0-dev")
 
 repositories {
     mavenCentral()

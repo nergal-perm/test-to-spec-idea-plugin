@@ -76,6 +76,17 @@ Open **Settings → Tools → Test to Spec** and configure the following per-pro
 
 Settings are stored in `.idea/testToSpec.xml` and can be committed to version control to share the configuration across the team.
 
+## Releasing
+
+Releases are published automatically via GitHub Actions when a version tag is pushed:
+
+```bash
+git tag v1.2.0
+git push origin v1.2.0
+```
+
+This triggers the release workflow, which builds the plugin zip and publishes it as a GitHub release with the zip attached and auto-generated release notes.
+
 ## Building
 
 Prerequisites: JDK 21+
@@ -92,7 +103,7 @@ cd test-to-spec
 The distributable zip is produced at:
 
 ```
-build/distributions/test-to-spec-1.0.0.zip
+build/distributions/test-to-spec-<version>.zip
 ```
 
 To launch a sandboxed IntelliJ instance with the plugin loaded for development:
