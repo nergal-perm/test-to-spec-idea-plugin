@@ -10,12 +10,21 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.kotlin</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider
                 language="kotlin"
                 implementationClass="ewc.openspec.testlink.ScenarioLineMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="JAVA"
+                implementationClass="ewc.openspec.testlink.ScenarioLineMarkerProviderJava"/>
+
+        <annotator language="kotlin" implementationClass="ewc.openspec.testlink.ScenarioAnnotator"/>
+        <annotator language="JAVA" implementationClass="ewc.openspec.testlink.ScenarioAnnotator"/>
+
+        <postStartupActivity implementation="ewc.openspec.testlink.SpecFileWatcher"/>
 
         <projectConfigurable
                 instance="ewc.openspec.testlink.settings.TestToSpecConfigurable"

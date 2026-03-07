@@ -18,6 +18,7 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity("2024.3")
         bundledPlugin("org.jetbrains.kotlin")
+        bundledPlugin("com.intellij.java")
     }
     implementation("org.commonmark:commonmark:0.24.0")
 }

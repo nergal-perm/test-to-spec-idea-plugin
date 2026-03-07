@@ -2,26 +2,17 @@ package ewc.openspec.testlink
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
-import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.popup.JBPopupFactory
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.components.JBScrollPane
 import ewc.openspec.testlink.settings.TestToSpecSettings
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedDeclaration
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import java.awt.Dimension
-import java.awt.event.MouseEvent
-import javax.swing.JEditorPane
-import javax.swing.event.HyperlinkEvent
 
 class ScenarioLineMarkerProvider : LineMarkerProvider {
+
+    private val log = Logger.getInstance(ScenarioLineMarkerProvider::class.java)
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element.node?.elementType != KtTokens.IDENTIFIER) return null
@@ -33,46 +24,38 @@ class ScenarioLineMarkerProvider : LineMarkerProvider {
 
         val project = element.project
         val settings = TestToSpecSettings.getInstance(project)
-        if (settings.state.scenarioAnnotationFqn.isBlank()) return null
+        log.debug("TestToSpec: checking element '${namedDeclaration.name}', scenarioAnnotationFqn='${settings.state.scenarioAnnotationFqn}'")
+
+        if (settings.state.scenarioAnnotationFqn.isBlank()) {
+            log.debug("TestToSpec: scenarioAnnotationFqn is blank, skipping")
+            return null
+        }
 
         val expectedShortName = settings.state.scenarioAnnotationFqn.substringAfterLast('.')
+        log.debug("TestToSpec: looking for annotation short name='$expectedShortName'")
+
+        val allAnnotations = namedDeclaration.annotationEntries.map { it.shortName?.asString() }
+        log.debug("TestToSpec: annotations on '${namedDeclaration.name}': $allAnnotations")
 
         val scenarios = namedDeclaration.annotationEntries
             .filter { it.shortName?.asString() == expectedShortName }
             .mapNotNull { annotation ->
                 val capability = extractStringArgument(annotation, settings.state.capabilityAttribute)
-                    ?: return@mapNotNull null
+                log.debug("TestToSpec: capability arg ('${settings.state.capabilityAttribute}') = $capability")
+                capability ?: return@mapNotNull null
                 val scenarioName = extractStringArgument(annotation, settings.state.valueAttribute)
-                    ?: return@mapNotNull null
+                log.debug("TestToSpec: value arg ('${settings.state.valueAttribute}') = $scenarioName")
+                scenarioName ?: return@mapNotNull null
                 ScenarioRef(capability, scenarioName)
             }
 
+        log.debug("TestToSpec: matched scenarios: $scenarios")
         if (scenarios.isEmpty()) return null
 
-        val tooltipText = if (scenarios.size == 1) {
-            "View scenario: ${scenarios[0].name}"
-        } else {
-            "View ${scenarios.size} scenarios"
-        }
-
-        return LineMarkerInfo(
-            element,
-            element.textRange,
-            Icons.SCENARIO,
-            { tooltipText },
-            { e: MouseEvent, _: PsiElement ->
-                if (e.isMetaDown || e.isControlDown) {
-                    navigateToScenario(project, scenarios[0])
-                } else {
-                    showScenarioPopup(project, scenarios, e)
-                }
-            },
-            GutterIconRenderer.Alignment.LEFT,
-            { tooltipText }
-        )
+        return ScenarioMarkerHelper.makeLineMarkerInfo(element, scenarios, project)
     }
 
-    private fun extractStringArgument(annotation: KtAnnotationEntry, name: String): String? {
+    private fun extractStringArgument(annotation: org.jetbrains.kotlin.psi.KtAnnotationEntry, name: String): String? {
         for (arg in annotation.valueArguments) {
             val argName = arg.getArgumentName()?.asName?.asString()
             if (argName == name) {
@@ -81,67 +64,4 @@ class ScenarioLineMarkerProvider : LineMarkerProvider {
         }
         return null
     }
-
-    private fun navigateToScenario(project: Project, ref: ScenarioRef) {
-        val content = SpecReader.readScenario(project, ref.capability, ref.name) ?: return
-        val virtualFile = LocalFileSystem.getInstance().findFileByPath(content.filePath) ?: return
-        OpenFileDescriptor(project, virtualFile, content.lineNumber, 0).navigate(true)
-    }
-
-    private fun showScenarioPopup(project: Project, scenarios: List<ScenarioRef>, mouseEvent: MouseEvent) {
-        val bodyHtml = buildString {
-            for ((index, ref) in scenarios.withIndex()) {
-                val content = SpecReader.readScenario(project, ref.capability, ref.name)
-                if (content != null) {
-                    append(MarkdownRenderer.renderToHtml(content.markdown))
-                    append("""<p><a href="navigate:$index">Open in spec.md</a></p>""")
-                } else {
-                    append("""<p><em>Scenario not found: ${ref.capability} / ${ref.name}</em></p>""")
-                }
-                if (index < scenarios.size - 1) {
-                    append("<hr/>")
-                }
-            }
-        }
-
-        val fullHtml = MarkdownRenderer.wrapInHtml(bodyHtml)
-
-        var popup: com.intellij.openapi.ui.popup.JBPopup? = null
-
-        val editorPane = JEditorPane("text/html", fullHtml).apply {
-            isEditable = false
-            caretPosition = 0
-            addHyperlinkListener { e ->
-                if (e.eventType == HyperlinkEvent.EventType.ACTIVATED) {
-                    val idx = e.description.removePrefix("navigate:").toIntOrNull()
-                    if (idx != null && idx in scenarios.indices) {
-                        popup?.closeOk(null)
-                        navigateToScenario(project, scenarios[idx])
-                    }
-                }
-            }
-        }
-
-        val scrollPane = JBScrollPane(editorPane).apply {
-            preferredSize = Dimension(600, 400)
-        }
-
-        val title = if (scenarios.size == 1) {
-            "Scenario: ${scenarios[0].name}"
-        } else {
-            "${scenarios.size} Scenarios"
-        }
-
-        popup = JBPopupFactory.getInstance()
-            .createComponentPopupBuilder(scrollPane, editorPane)
-            .setTitle(title)
-            .setMovable(true)
-            .setResizable(true)
-            .setRequestFocus(true)
-            .createPopup()
-
-        popup.show(RelativePoint(mouseEvent))
-    }
-
-    private data class ScenarioRef(val capability: String, val name: String)
 }

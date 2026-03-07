@@ -37,7 +37,6 @@ object MarkdownRenderer {
                     color: #$fg;
                     background-color: #$bg;
                     margin: 8px 12px;
-                    line-height: 1.5;
                 }
                 h1, h2, h3, h4, h5, h6 {
                     margin-top: 8px;
@@ -50,14 +49,11 @@ object MarkdownRenderer {
                     font-size: ${fontSize - 1}pt;
                     background-color: #$codeBg;
                     padding: 1px 4px;
-                    border-radius: 3px;
                 }
                 pre {
                     background-color: #$codeBg;
                     border: 1px solid #$borderColor;
-                    border-radius: 4px;
                     padding: 8px;
-                    overflow-x: auto;
                 }
                 pre code {
                     background-color: transparent;
@@ -67,14 +63,10 @@ object MarkdownRenderer {
                 li { margin: 2px 0; }
                 a { color: #$linkColor; }
                 hr {
-                    border: none;
                     border-top: 1px solid #$borderColor;
                     margin: 8px 0;
                 }
-                table {
-                    border-collapse: collapse;
-                    margin: 4px 0;
-                }
+                table { margin: 4px 0; }
                 th, td {
                     border: 1px solid #$borderColor;
                     padding: 4px 8px;
@@ -85,7 +77,6 @@ object MarkdownRenderer {
                     margin: 4px 0;
                     padding-left: 12px;
                     color: #$fg;
-                    opacity: 0.85;
                 }
                 strong { font-weight: bold; }
                 em { font-style: italic; }
