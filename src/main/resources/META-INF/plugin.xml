@@ -1,0 +1,29 @@
+<idea-plugin>
+    <id>ewc.openspec.testlink</id>
+    <name>Test to Spec</name>
+    <vendor>Evgenii Terekhov</vendor>
+    <description><![CDATA[
+        Links @Scenario annotations in unit tests to specification files.
+        Adds a gutter icon that shows the scenario content from spec.md in a rendered markdown popup,
+        and allows navigation to the corresponding spec file.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="ewc.openspec.testlink.ScenarioLineMarkerProvider"/>
+
+        <projectConfigurable
+                instance="ewc.openspec.testlink.settings.TestToSpecConfigurable"
+                id="ewc.openspec.testlink.settings"
+                displayName="Test to Spec"
+                parentId="tools"/>
+
+        <projectService
+                serviceImplementation="ewc.openspec.testlink.settings.TestToSpecSettings"/>
+    </extensions>
+</idea-plugin>
