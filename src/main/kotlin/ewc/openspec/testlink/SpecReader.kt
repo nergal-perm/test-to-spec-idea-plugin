@@ -1,7 +1,9 @@
 package ewc.openspec.testlink
 
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
 import ewc.openspec.testlink.settings.TestToSpecSettings
 import java.io.File
 
@@ -29,13 +31,16 @@ object SpecReader {
         }
         log.debug("TestToSpec: looking for spec file at '$specPath'")
 
-        val file = File(specPath)
-        if (!file.exists()) {
+        if (!File(specPath).exists()) {
             log.debug("TestToSpec: spec file not found: $specPath")
             return null
         }
 
-        val lines = file.readLines()
+        val lines = run {
+            val vf = LocalFileSystem.getInstance().findFileByPath(specPath)
+            val doc = vf?.let { FileDocumentManager.getInstance().getDocument(it) }
+            doc?.text?.lines() ?: File(specPath).readLines()
+        }
         val escapedName = Regex.escape(scenarioName)
         val headingRegex = "^#{1,6}\\s+Scenario:\\s*$escapedName\\s*$".toRegex(RegexOption.IGNORE_CASE)
         log.debug("TestToSpec: searching for heading matching regex pattern for scenario '$scenarioName'")

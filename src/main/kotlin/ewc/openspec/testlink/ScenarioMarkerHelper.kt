@@ -1,13 +1,9 @@
 package ewc.openspec.testlink
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.openapi.vfs.newvfs.BulkFileListener
-import com.intellij.openapi.vfs.newvfs.events.VFileEvent
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiElement
@@ -15,7 +11,6 @@ import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.components.JBScrollPane
 import java.awt.Dimension
 import java.awt.event.MouseEvent
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.swing.JEditorPane
 import javax.swing.event.HyperlinkEvent
 
@@ -104,25 +99,6 @@ object ScenarioMarkerHelper {
             .setResizable(true)
             .setRequestFocus(true)
             .createPopup()
-
-        val watchedPaths = scenarios.mapNotNull { SpecReader.specFilePath(project, it.capability) }.toSet()
-        if (watchedPaths.isNotEmpty()) {
-            val updatePending = AtomicBoolean(false)
-            project.messageBus.connect(popup).subscribe(
-                VirtualFileManager.VFS_CHANGES,
-                object : BulkFileListener {
-                    override fun after(events: List<VFileEvent>) {
-                        if (events.any { it.path in watchedPaths } && updatePending.compareAndSet(false, true)) {
-                            ApplicationManager.getApplication().invokeLater {
-                                updatePending.set(false)
-                                editorPane.text = buildHtml()
-                                editorPane.caretPosition = 0
-                            }
-                        }
-                    }
-                }
-            )
-        }
 
         popup.show(RelativePoint(mouseEvent))
     }
