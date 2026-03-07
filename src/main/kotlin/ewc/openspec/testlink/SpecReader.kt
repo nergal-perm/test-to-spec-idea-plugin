@@ -16,13 +16,17 @@ object SpecReader {
         val filePath: String
     )
 
+    fun specFilePath(project: Project, capability: String): String? {
+        val basePath = project.basePath ?: return null
+        val specRootPath = TestToSpecSettings.getInstance(project).state.specRootPath
+        return "$basePath/$specRootPath/$capability/spec.md"
+    }
+
     fun readScenario(project: Project, capability: String, scenarioName: String): ScenarioContent? {
-        val settings = TestToSpecSettings.getInstance(project)
-        val basePath = project.basePath ?: run {
+        val specPath = specFilePath(project, capability) ?: run {
             log.debug("TestToSpec: project.basePath is null")
             return null
         }
-        val specPath = "$basePath/${settings.state.specRootPath}/$capability/spec.md"
         log.debug("TestToSpec: looking for spec file at '$specPath'")
 
         val file = File(specPath)
