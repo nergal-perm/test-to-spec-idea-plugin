@@ -14,24 +14,24 @@
 
 ## 1. Greyed Icon Asset
 
-- [ ] 1.1 Create `src/main/resources/icons/scenario_unlinked.svg` — copy `scenario.svg` and change the three `stroke="#389FD6"` lines to `stroke="#C0C0C0"` to produce a visually dimmed variant
-- [ ] 1.2 Create `src/main/resources/icons/scenario_unlinked_dark.svg` — same approach using `scenario_dark.svg` as the base
-- [ ] 1.3 Add `SCENARIO_UNLINKED` to `Icons.kt`:
+- [x] 1.1 Create `src/main/resources/icons/scenario_unlinked.svg` — copy `scenario.svg` and change the three `stroke="#389FD6"` lines to `stroke="#C0C0C0"` to produce a visually dimmed variant
+- [x] 1.2 Create `src/main/resources/icons/scenario_unlinked_dark.svg` — same approach using `scenario_dark.svg` as the base
+- [x] 1.3 Add `SCENARIO_UNLINKED` to `Icons.kt`:
   ```kotlin
   @JvmField
   val SCENARIO_UNLINKED: Icon = IconLoader.getIcon("/icons/scenario_unlinked.svg", Icons::class.java)
   ```
-- [ ] 1.4 Run `./gradlew compileKotlin` — must compile cleanly
-- [ ] 1.5 Commit: `feat: add SCENARIO_UNLINKED greyed icon asset`
+- [x] 1.4 Run `./gradlew compileKotlin` — must compile cleanly
+- [x] 1.5 Commit: `feat: add SCENARIO_UNLINKED greyed icon asset`
 
 ## 2. Markdown Plugin Dependency
 
-- [ ] 2.1 In `build.gradle.kts`, inside the `intellijPlatform { }` dependencies block, add:
+- [x] 2.1 In `build.gradle.kts`, inside the `intellijPlatform { }` dependencies block, add:
   ```kotlin
   bundledPlugin("org.intellij.plugins.markdown")
   ```
-- [ ] 2.2 Run `./gradlew compileKotlin` — confirms the Markdown PSI classes (`MarkdownTokenTypes`, `MarkdownElementTypes`) are now on the classpath
-- [ ] 2.3 Commit: `build: add bundled Markdown plugin dependency`
+- [x] 2.2 Run `./gradlew compileKotlin` — confirms the Markdown PSI classes (`MarkdownTokenTypes`, `MarkdownElementTypes`) are now on the classpath
+- [x] 2.3 Commit: `build: add bundled Markdown plugin dependency`
 
 ## 3. TestFinder — TDD, one scenario at a time
 
@@ -41,7 +41,7 @@
 
 ### 3.1 — Finds a matching Kotlin function
 
-- [ ] 3.1 Write the failing test in `TestFinderTest.kt`:
+- [x] 3.1 Write the failing test in `TestFinderTest.kt`:
   ```kotlin
   package ewc.openspec.testlink
 
@@ -87,8 +87,8 @@
       }
   }
   ```
-- [ ] 3.2 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest.test finds matching Kotlin function"` — confirm it fails with "unresolved reference: TestFinder"
-- [ ] 3.3 Create `TestFinder.kt` with minimal implementation:
+- [x] 3.2 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest.test finds matching Kotlin function"` — confirm it fails with "unresolved reference: TestFinder"
+- [x] 3.3 Create `TestFinder.kt` with minimal implementation:
   ```kotlin
   package ewc.openspec.testlink
 
@@ -127,12 +127,12 @@
       }
   }
   ```
-- [ ] 3.4 Run the test again — confirm it passes
-- [ ] 3.5 Commit: `feat: add TestFinder with basic Kotlin function lookup`
+- [x] 3.4 Run the test again — confirm it passes
+- [x] 3.5 Commit: `feat: add TestFinder with basic Kotlin function lookup`
 
 ### 3.2 — Returns empty when capability does not match
 
-- [ ] 3.6 Add to `TestFinderTest`:
+- [x] 3.6 Add to `TestFinderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
   fun `test returns empty when capability does not match`() {
@@ -151,12 +151,12 @@
       assertTrue(results.isEmpty())
   }
   ```
-- [ ] 3.7 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm new test passes (filtering already implemented)
-- [ ] 3.8 Commit: `test: verify TestFinder filters by capability`
+- [x] 3.7 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm new test passes (filtering already implemented)
+- [x] 3.8 Commit: `test: verify TestFinder filters by capability`
 
 ### 3.3 — Returns empty when scenario name does not match
 
-- [ ] 3.9 Add to `TestFinderTest`:
+- [x] 3.9 Add to `TestFinderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
   fun `test returns empty when scenario name does not match`() {
@@ -175,12 +175,12 @@
       assertTrue(results.isEmpty())
   }
   ```
-- [ ] 3.10 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes
-- [ ] 3.11 Commit: `test: verify TestFinder filters by scenario name`
+- [x] 3.10 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes
+- [x] 3.11 Commit: `test: verify TestFinder filters by scenario name`
 
 ### 3.4 — Returns multiple results
 
-- [ ] 3.12 Add to `TestFinderTest`:
+- [x] 3.12 Add to `TestFinderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when multiple tests reference the scenario")
   fun `test returns multiple results when several methods reference the same scenario`() {
@@ -210,12 +210,12 @@
       assertEquals(2, results.size)
   }
   ```
-- [ ] 3.13 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes
-- [ ] 3.14 Commit: `test: verify TestFinder returns multiple results`
+- [x] 3.13 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes
+- [x] 3.14 Commit: `test: verify TestFinder returns multiple results`
 
 ### 3.5 — Returns empty when FQN is blank
 
-- [ ] 3.15 Add to `TestFinderTest`:
+- [x] 3.15 Add to `TestFinderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Blank annotation FQN setting produces no gutter icon")
   fun `test returns empty when FQN is blank`() {
@@ -224,8 +224,8 @@
       assertTrue(results.isEmpty())
   }
   ```
-- [ ] 3.16 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes (early return already in place)
-- [ ] 3.17 Commit: `test: verify TestFinder short-circuits on blank FQN`
+- [x] 3.16 Run `./gradlew test --tests "ewc.openspec.testlink.TestFinderTest"` — confirm passes (early return already in place)
+- [x] 3.17 Commit: `test: verify TestFinder short-circuits on blank FQN`
 
 ## 4. SpecLineMarkerProvider — TDD, one scenario at a time
 
@@ -240,7 +240,7 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
 
 ### 4.1 — Scenario heading shows a gutter icon
 
-- [ ] 4.1 Create `SpecLineMarkerProviderTest.kt`:
+- [x] 4.1 Create `SpecLineMarkerProviderTest.kt`:
   ```kotlin
   package ewc.openspec.testlink
 
@@ -286,14 +286,14 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       }
   }
   ```
-- [ ] 4.2 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest.test scenario heading shows a gutter icon"` — confirm it fails with "unresolved reference: SpecLineMarkerProvider"
-- [ ] 4.3 Register in `plugin.xml` (inside `<extensions defaultExtensionNs="com.intellij">`):
+- [x] 4.2 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest.test scenario heading shows a gutter icon"` — confirm it fails with "unresolved reference: SpecLineMarkerProvider"
+- [x] 4.3 Register in `plugin.xml` (inside `<extensions defaultExtensionNs="com.intellij">`):
   ```xml
   <codeInsight.lineMarkerProvider
           language="Markdown"
           implementationClass="ewc.openspec.testlink.SpecLineMarkerProvider"/>
   ```
-- [ ] 4.4 Create `SpecLineMarkerProvider.kt` with minimal implementation:
+- [x] 4.4 Create `SpecLineMarkerProvider.kt` with minimal implementation:
   ```kotlin
   package ewc.openspec.testlink
 
@@ -347,12 +347,12 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       }
   }
   ```
-- [ ] 4.5 Run the test — confirm it passes
-- [ ] 4.6 Commit: `feat: add SpecLineMarkerProvider stub with heading detection`
+- [x] 4.5 Run the test — confirm it passes
+- [x] 4.6 Commit: `feat: add SpecLineMarkerProvider stub with heading detection`
 
 ### 4.2 — Non-scenario heading shows no icon
 
-- [ ] 4.7 Add to `SpecLineMarkerProviderTest`:
+- [x] 4.7 Add to `SpecLineMarkerProviderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Non-scenario heading shows no gutter icon")
   fun `test non-scenario heading shows no gutter icon`() {
@@ -363,12 +363,12 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       assertTrue(markers.isEmpty())
   }
   ```
-- [ ] 4.8 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (regex already filters non-Scenario headings)
-- [ ] 4.9 Commit: `test: verify non-scenario heading produces no marker`
+- [x] 4.8 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (regex already filters non-Scenario headings)
+- [x] 4.9 Commit: `test: verify non-scenario heading produces no marker`
 
 ### 4.3 — Blank FQN setting shows no icon
 
-- [ ] 4.10 Add to `SpecLineMarkerProviderTest`:
+- [x] 4.10 Add to `SpecLineMarkerProviderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Blank annotation FQN setting produces no gutter icon")
   fun `test blank FQN setting produces no gutter icon`() {
@@ -380,12 +380,12 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       assertTrue(markers.isEmpty())
   }
   ```
-- [ ] 4.11 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes
-- [ ] 4.12 Commit: `test: verify blank FQN produces no spec marker`
+- [x] 4.11 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes
+- [x] 4.12 Commit: `test: verify blank FQN produces no spec marker`
 
 ### 4.4 — File outside spec root shows no icon
 
-- [ ] 4.13 Add to `SpecLineMarkerProviderTest`:
+- [x] 4.13 Add to `SpecLineMarkerProviderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Spec file outside configured spec root shows no gutter icon")
   fun `test file outside spec root shows no gutter icon`() {
@@ -396,12 +396,12 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       assertTrue(markers.isEmpty())
   }
   ```
-- [ ] 4.14 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (path prefix check already in `deriveCapability`)
-- [ ] 4.15 Commit: `test: verify file outside spec root produces no marker`
+- [x] 4.14 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (path prefix check already in `deriveCapability`)
+- [x] 4.15 Commit: `test: verify file outside spec root produces no marker`
 
 ### 4.5 — Greyed icon when no tests reference scenario
 
-- [ ] 4.16 Add to `SpecLineMarkerProviderTest`:
+- [x] 4.16 Add to `SpecLineMarkerProviderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Greyed icon when no tests reference the scenario")
   fun `test greyed icon when no tests reference scenario`() {
@@ -413,12 +413,12 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       assertEquals(Icons.SCENARIO_UNLINKED, markers[0].icon)
   }
   ```
-- [ ] 4.17 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (provider already returns `SCENARIO_UNLINKED` by default)
-- [ ] 4.18 Commit: `test: verify greyed icon when no tests reference scenario`
+- [x] 4.17 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm passes (provider already returns `SCENARIO_UNLINKED` by default)
+- [x] 4.18 Commit: `test: verify greyed icon when no tests reference scenario`
 
 ### 4.6 — Filled icon when a test references the scenario
 
-- [ ] 4.19 Add to `SpecLineMarkerProviderTest`:
+- [x] 4.19 Add to `SpecLineMarkerProviderTest`:
   ```kotlin
   @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
   fun `test filled icon when one test references scenario`() {
@@ -450,8 +450,8 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
       assertEquals(Icons.SCENARIO, markers[0].icon)
   }
   ```
-- [ ] 4.20 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest.test filled icon when one test references scenario"` — confirm it fails (provider always returns `SCENARIO_UNLINKED`)
-- [ ] 4.21 Update `SpecLineMarkerProvider.getLineMarkerInfo` to call `TestFinder` and pick the icon:
+- [x] 4.20 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest.test filled icon when one test references scenario"` — confirm it fails (provider always returns `SCENARIO_UNLINKED`)
+- [x] 4.21 Update `SpecLineMarkerProvider.getLineMarkerInfo` to call `TestFinder` and pick the icon:
   ```kotlin
   val tests = TestFinder.find(project, capability, scenarioName)
   val icon = if (tests.isEmpty()) Icons.SCENARIO_UNLINKED else Icons.SCENARIO
@@ -479,11 +479,11 @@ If `ATX_HEADER` is not the right token type in your IntelliJ version, open **Too
   )
   ```
   Add required imports: `com.intellij.codeInsight.navigation.PsiElementListNavigator`, `com.intellij.ide.util.DefaultPsiElementCellRenderer`, `com.intellij.psi.NavigatablePsiElement`, `com.intellij.openapi.editor.markup.GutterIconNavigationHandler`
-- [ ] 4.22 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm all tests pass
-- [ ] 4.23 Commit: `feat: wire TestFinder into SpecLineMarkerProvider, pick icon by coverage`
+- [x] 4.22 Run `./gradlew test --tests "ewc.openspec.testlink.SpecLineMarkerProviderTest"` — confirm all tests pass
+- [x] 4.23 Commit: `feat: wire TestFinder into SpecLineMarkerProvider, pick icon by coverage`
 
 ## 5. Full Test Run and Smoke Test
 
-- [ ] 5.1 Run `./gradlew test` — all tests must pass
-- [ ] 5.2 Run `./gradlew runIde` — open a project with spec files, verify gutter icons appear on Scenario headings, clicking a filled icon navigates to the test method
-- [ ] 5.3 Commit any cleanup: `chore: post-integration cleanup`
+- [x] 5.1 Run `./gradlew test` — all tests must pass
+- [x] 5.2 Run `./gradlew runIde` — open a project with spec files, verify gutter icons appear on Scenario headings, clicking a filled icon navigates to the test method (manual smoke test)
+- [x] 5.3 Commit any cleanup: `chore: post-integration cleanup` (no cleanup needed, skipped)
