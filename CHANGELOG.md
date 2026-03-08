@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-03-08
+
+### Added
+- Gutter icons on `#### Scenario:` headings in spec `.md` files, linking back to annotated test methods
+- Filled icon when one or more test methods reference the scenario via `@Scenario`; greyed icon when none do
+- Clicking a filled icon with a single match navigates directly to the test method
+- Clicking a filled icon with multiple matches opens the IDE's standard navigation chooser
+- New `TestFinder` component using `AnnotatedMembersSearch` to locate test methods by capability and scenario name
+- Bundled Markdown plugin declared as a runtime dependency (`org.intellij.plugins.markdown`)
+
 ## [1.2.0] - 2026-03-08
 
 ### Added
