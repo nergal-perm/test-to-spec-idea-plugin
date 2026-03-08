@@ -12,6 +12,7 @@
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.kotlin</depends>
+    <depends>org.intellij.plugins.markdown</depends>
 
     <extensions defaultExtensionNs="org.jetbrains.kotlin">
         <supportsKotlinPluginMode supportsK2="true"/>
@@ -24,6 +25,9 @@
         <codeInsight.lineMarkerProvider
                 language="JAVA"
                 implementationClass="ewc.openspec.testlink.ScenarioLineMarkerProviderJava"/>
+        <codeInsight.lineMarkerProvider
+                language="Markdown"
+                implementationClass="ewc.openspec.testlink.SpecLineMarkerProvider"/>
 
         <annotator language="kotlin" implementationClass="ewc.openspec.testlink.ScenarioAnnotator"/>
         <annotator language="JAVA" implementationClass="ewc.openspec.testlink.ScenarioAnnotator"/>

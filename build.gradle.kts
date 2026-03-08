@@ -23,6 +23,7 @@ dependencies {
         intellijIdeaCommunity("2024.3")
         bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("com.intellij.java")
+        bundledPlugin("org.intellij.plugins.markdown")
         testFramework(TestFrameworkType.Platform)
     }
     implementation("org.commonmark:commonmark:0.24.0")
