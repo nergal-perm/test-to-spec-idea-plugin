@@ -76,6 +76,43 @@ Open **Settings → Tools → Test to Spec** and configure the following per-pro
 
 Settings are stored in `.idea/testToSpec.xml` and can be committed to version control to share the configuration across the team.
 
+## Defining the @Scenario Annotation
+
+The plugin reads your own `@Scenario` annotation — you define it in your project and point the plugin to its fully qualified name in settings.
+
+### Kotlin
+
+```kotlin
+@Repeatable
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.SOURCE)
+annotation class Scenario(val capability: String, val value: String)
+```
+
+`@Repeatable` (Kotlin 1.6+) is required to allow multiple `@Scenario` annotations on the same function. No container class is needed. `SOURCE` retention is sufficient because the plugin reads PSI at edit time, not at runtime.
+
+### Java
+
+Java requires `@Repeatable` to allow multiple `@Scenario` annotations on the same method:
+
+```java
+import java.lang.annotation.*;
+
+@Repeatable(Scenario.Container.class)
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface Scenario {
+    String capability();
+    String value();
+
+    @interface Container {
+        Scenario[] value();
+    }
+}
+```
+
+Without `@Repeatable`, the IDE will reject a second `@Scenario` on the same method as a compile error.
+
 ## Releasing
 
 Releases are published automatically via GitHub Actions when a version tag is pushed:

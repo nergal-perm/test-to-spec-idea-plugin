@@ -6,8 +6,9 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiElement
 import ewc.openspec.testlink.settings.TestToSpecSettings
 import org.jetbrains.kotlin.lexer.KtTokens
-import org.jetbrains.kotlin.psi.KtClass
-import org.jetbrains.kotlin.psi.KtNamedDeclaration
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
+import org.jetbrains.kotlin.psi.KtAnnotationUseSiteTarget
+import org.jetbrains.kotlin.psi.KtModifierList
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
 class ScenarioLineMarkerProvider : LineMarkerProvider {
@@ -15,47 +16,35 @@ class ScenarioLineMarkerProvider : LineMarkerProvider {
     private val log = Logger.getInstance(ScenarioLineMarkerProvider::class.java)
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        if (element.node?.elementType != KtTokens.IDENTIFIER) return null
+        if (element.node?.elementType != KtTokens.AT) return null
 
-        val declaration = element.parent
-        if (declaration !is KtNamedFunction && declaration !is KtClass) return null
-        val namedDeclaration = declaration as KtNamedDeclaration
-        if (namedDeclaration.nameIdentifier != element) return null
+        val annotation = element.parent as? KtAnnotationEntry ?: return null
+        val modifierList = annotation.parent as? KtModifierList
+            ?: (annotation.parent as? KtAnnotationUseSiteTarget)?.parent as? KtModifierList
+            ?: return null
+        val owningDeclaration = modifierList.parent
+        if (owningDeclaration !is KtNamedFunction) return null
 
         val project = element.project
         val settings = TestToSpecSettings.getInstance(project)
-        log.debug("TestToSpec: checking element '${namedDeclaration.name}', scenarioAnnotationFqn='${settings.state.scenarioAnnotationFqn}'")
 
-        if (settings.state.scenarioAnnotationFqn.isBlank()) {
-            log.debug("TestToSpec: scenarioAnnotationFqn is blank, skipping")
-            return null
-        }
+        if (settings.state.scenarioAnnotationFqn.isBlank()) return null
 
         val expectedShortName = settings.state.scenarioAnnotationFqn.substringAfterLast('.')
-        log.debug("TestToSpec: looking for annotation short name='$expectedShortName'")
+        if (annotation.shortName?.asString() != expectedShortName) return null
 
-        val allAnnotations = namedDeclaration.annotationEntries.map { it.shortName?.asString() }
-        log.debug("TestToSpec: annotations on '${namedDeclaration.name}': $allAnnotations")
+        val capability = extractStringArgument(annotation, settings.state.capabilityAttribute) ?: return null
+        val scenarioName = extractStringArgument(annotation, settings.state.valueAttribute) ?: return null
 
-        val scenarios = namedDeclaration.annotationEntries
-            .filter { it.shortName?.asString() == expectedShortName }
-            .mapNotNull { annotation ->
-                val capability = extractStringArgument(annotation, settings.state.capabilityAttribute)
-                log.debug("TestToSpec: capability arg ('${settings.state.capabilityAttribute}') = $capability")
-                capability ?: return@mapNotNull null
-                val scenarioName = extractStringArgument(annotation, settings.state.valueAttribute)
-                log.debug("TestToSpec: value arg ('${settings.state.valueAttribute}') = $scenarioName")
-                scenarioName ?: return@mapNotNull null
-                ScenarioRef(capability, scenarioName)
-            }
+        // element IS the AT token (guarded by the KtTokens.AT check above), so it already anchors the gutter icon
+        // to the '@' sign. KtAnnotationEntry.atSign does not exist in this version of the Kotlin PSI API,
+        // so we use element directly rather than going through the annotation.
+        log.debug("TestToSpec: marker for '$scenarioName' (capability='$capability') on function '${owningDeclaration.name}'")
 
-        log.debug("TestToSpec: matched scenarios: $scenarios")
-        if (scenarios.isEmpty()) return null
-
-        return ScenarioMarkerHelper.makeLineMarkerInfo(element, scenarios, project)
+        return ScenarioMarkerHelper.makeLineMarkerInfo(element, listOf(ScenarioRef(capability, scenarioName)), project)
     }
 
-    private fun extractStringArgument(annotation: org.jetbrains.kotlin.psi.KtAnnotationEntry, name: String): String? {
+    private fun extractStringArgument(annotation: KtAnnotationEntry, name: String): String? {
         for (arg in annotation.valueArguments) {
             val argName = arg.getArgumentName()?.asName?.asString()
             if (argName == name) {

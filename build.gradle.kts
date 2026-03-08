@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.0.21"
@@ -21,8 +23,10 @@ dependencies {
         intellijIdeaCommunity("2024.3")
         bundledPlugin("org.jetbrains.kotlin")
         bundledPlugin("com.intellij.java")
+        testFramework(TestFrameworkType.Platform)
     }
     implementation("org.commonmark:commonmark:0.24.0")
+    testImplementation("junit:junit:4.13.2")
 }
 
 kotlin {
