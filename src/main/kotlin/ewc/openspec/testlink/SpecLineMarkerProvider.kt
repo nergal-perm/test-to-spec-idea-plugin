@@ -2,8 +2,7 @@ package ewc.openspec.testlink
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
-import com.intellij.codeInsight.daemon.impl.PsiElementListNavigator
-import com.intellij.ide.util.DefaultPsiElementCellRenderer
+import com.intellij.codeInsight.navigation.PsiTargetNavigator
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.NavigatablePsiElement
@@ -33,13 +32,8 @@ class SpecLineMarkerProvider : LineMarkerProvider {
             if (tests.size == 1) {
                 (tests[0] as? NavigatablePsiElement)?.navigate(true)
             } else {
-                PsiElementListNavigator.openTargets(
-                    e,
-                    tests.filterIsInstance<NavigatablePsiElement>().toTypedArray(),
-                    "Tests for '$scenarioName'",
-                    null,
-                    DefaultPsiElementCellRenderer()
-                )
+                PsiTargetNavigator(tests.filterIsInstance<NavigatablePsiElement>().toTypedArray())
+                    .navigate(e, "Tests for '$scenarioName'", project)
             }
         }
 
