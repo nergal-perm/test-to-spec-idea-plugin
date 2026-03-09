@@ -55,7 +55,7 @@ class ScenarioLineMarkerProviderJavaTest : BasePlatformTestCase() {
     private fun annotationLinesIn(code: String): List<Int> =
         code.lines().mapIndexedNotNull { i, l -> if (l.trimStart().startsWith("@Scenario")) i else null }
 
-    @Scenario(capability = "scenario-gutter-marker", value = "Single annotation on a Java method")
+    @Scenario(capability = "test-to-spec-gutter-link", value = "Single annotation on a Java method")
     fun `test single Scenario annotation on Java method produces icon on annotation row`() {
         val code = """
             import ewc.openspec.testlink.Scenario;
@@ -69,7 +69,7 @@ class ScenarioLineMarkerProviderJavaTest : BasePlatformTestCase() {
         assertEquals(annotationLinesIn(code).first(), lineOf(markers[0]))
     }
 
-    @Scenario(capability = "scenario-gutter-marker", value = "Multiple annotations on a Java method")
+    @Scenario(capability = "test-to-spec-gutter-link", value = "Multiple annotations on a Java method")
     fun `test multiple Scenario annotations on Java method each produce their own icon`() {
         val code = """
             import ewc.openspec.testlink.Scenario;
@@ -85,7 +85,7 @@ class ScenarioLineMarkerProviderJavaTest : BasePlatformTestCase() {
         assertEquals(annotationLinesIn(code), markerLines)
     }
 
-    @Scenario(capability = "scenario-gutter-marker", value = "Blank FQN produces no gutter icon on Java method")
+    @Scenario(capability = "test-to-spec-gutter-link", value = "Blank annotation FQN setting produces no gutter icon")
     fun `test blank FQN setting produces no gutter icon on Java method`() {
         TestToSpecSettings.getInstance(project).state.scenarioAnnotationFqn = ""
         val code = """
@@ -99,7 +99,7 @@ class ScenarioLineMarkerProviderJavaTest : BasePlatformTestCase() {
         assertTrue("Expected no markers when FQN is blank", markers.isEmpty())
     }
 
-    @Scenario(capability = "scenario-gutter-marker", value = "Annotation on a Java class produces no gutter icon")
+    @Scenario(capability = "test-to-spec-gutter-link", value = "Annotation on a Java class produces no gutter icon")
     fun `test Scenario annotation on Java class produces no gutter icon`() {
         val code = """
             import ewc.openspec.testlink.Scenario;

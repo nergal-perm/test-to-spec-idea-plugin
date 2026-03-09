@@ -23,7 +23,6 @@ class TestFinderTest : BasePlatformTestCase() {
         )
     }
 
-    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
     fun `test returns empty when capability does not match`() {
         myFixture.addFileToProject(
             "src/MyTest.kt",
@@ -40,7 +39,6 @@ class TestFinderTest : BasePlatformTestCase() {
         assertTrue(results.isEmpty())
     }
 
-    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
     fun `test returns empty when scenario name does not match`() {
         myFixture.addFileToProject(
             "src/MyTest2.kt",
@@ -57,7 +55,6 @@ class TestFinderTest : BasePlatformTestCase() {
         assertTrue(results.isEmpty())
     }
 
-    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when multiple tests reference the scenario")
     fun `test returns multiple results when several methods reference the same scenario`() {
         myFixture.addFileToProject(
             "src/TestA.kt",
@@ -85,7 +82,6 @@ class TestFinderTest : BasePlatformTestCase() {
         assertEquals(2, results.size)
     }
 
-    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
     fun `test method with multiple Scenario annotations is returned only once`() {
         myFixture.addFileToProject(
             "src/MultiTest.kt",
@@ -112,7 +108,6 @@ class TestFinderTest : BasePlatformTestCase() {
         assertTrue(results.isEmpty())
     }
 
-    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
     fun `test finds matching Kotlin function`() {
         myFixture.addFileToProject(
             "src/MyTest.kt",

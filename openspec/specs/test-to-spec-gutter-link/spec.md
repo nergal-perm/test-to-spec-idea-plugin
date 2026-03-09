@@ -36,6 +36,13 @@ The plugin SHALL produce one independent gutter icon for each `@Scenario` annota
 - **THEN** each annotation row displays its own gutter icon
 - **THEN** each icon is independent and links to its own scenario
 
+### Requirement: Blank FQN setting suppresses all gutter icons
+The plugin SHALL produce no gutter icons on annotation rows when the `@Scenario` annotation FQN setting is blank.
+
+#### Scenario: Blank annotation FQN setting produces no gutter icon
+- **WHEN** the `@Scenario` annotation FQN setting is blank
+- **THEN** no gutter icon appears on any annotation row in test files
+
 ### Requirement: Icon behaviour is unchanged
 The tooltip, click action, and visual appearance of each gutter icon SHALL be identical to the previous behaviour — only the row placement changes.
 
