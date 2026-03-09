@@ -4,7 +4,6 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.codeInsight.navigation.PsiTargetNavigator
 import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import ewc.openspec.testlink.settings.TestToSpecSettings
@@ -54,31 +53,14 @@ class SpecLineMarkerProvider : LineMarkerProvider {
 
     private fun deriveCapability(element: PsiElement, settings: TestToSpecSettings): String? {
         val project = element.project
+        val basePath = project.basePath ?: return null
         val specRoot = settings.state.specRootPath
-        val virtualFile = element.containingFile?.virtualFile ?: return null
-        val filePath = virtualFile.path
+        val filePath = element.containingFile?.virtualFile?.path ?: return null
 
-        // Collect candidate root paths. Content roots are checked first because they
-        // cover light platform tests (where an in-memory VFS root is the content root
-        // and basePath does not match the virtual file paths). project.basePath is added
-        // as a fallback for multi-module Maven/Gradle projects where the root aggregator
-        // directory may not be registered as a content root, yet spec files live there.
-        val contentRootPaths = ProjectRootManager.getInstance(project).contentRoots.map { it.path }
-        val candidates = if (project.basePath != null && project.basePath !in contentRootPaths)
-            contentRootPaths + project.basePath!!
-        else
-            contentRootPaths
-
-        for (rootPath in candidates) {
-            val prefix = "$rootPath/$specRoot/"
-            if (filePath.startsWith(prefix)) {
-                val relative = filePath.removePrefix(prefix)
-                return relative.substringBefore('/')
-                    .takeIf { it.isNotEmpty() && it != relative }
-            }
-        }
-
-        return null
+        val prefix = "$basePath/$specRoot/"
+        if (!filePath.startsWith(prefix)) return null
+        val relative = filePath.removePrefix(prefix)
+        return relative.substringBefore('/').takeIf { it.isNotEmpty() && it != relative }
     }
 
     companion object {
