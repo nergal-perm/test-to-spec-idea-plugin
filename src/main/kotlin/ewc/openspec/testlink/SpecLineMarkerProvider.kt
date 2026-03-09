@@ -56,15 +56,20 @@ class SpecLineMarkerProvider : LineMarkerProvider {
         val project = element.project
         val specRoot = settings.state.specRootPath
         val virtualFile = element.containingFile?.virtualFile ?: return null
+        val filePath = virtualFile.path
 
-        // contentRoots is used instead of basePath because it covers both production
-        // (where the project root is always a content root) and light platform tests
-        // (where an in-memory VFS root is registered as the content root, so basePath
-        // would not match the virtual file paths).
-        val contentRoots = ProjectRootManager.getInstance(project).contentRoots
-        for (root in contentRoots) {
-            val rootPath = root.path
-            val filePath = virtualFile.path
+        // Collect candidate root paths. Content roots are checked first because they
+        // cover light platform tests (where an in-memory VFS root is the content root
+        // and basePath does not match the virtual file paths). project.basePath is added
+        // as a fallback for multi-module Maven/Gradle projects where the root aggregator
+        // directory may not be registered as a content root, yet spec files live there.
+        val contentRootPaths = ProjectRootManager.getInstance(project).contentRoots.map { it.path }
+        val candidates = if (project.basePath != null && project.basePath !in contentRootPaths)
+            contentRootPaths + project.basePath!!
+        else
+            contentRootPaths
+
+        for (rootPath in candidates) {
             val prefix = "$rootPath/$specRoot/"
             if (filePath.startsWith(prefix)) {
                 val relative = filePath.removePrefix(prefix)
