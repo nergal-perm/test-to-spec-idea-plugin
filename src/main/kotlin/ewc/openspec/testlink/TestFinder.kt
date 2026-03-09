@@ -21,6 +21,7 @@ object TestFinder {
 
         return AnnotatedMembersSearch.search(annotationClass, scope)
             .filterIsInstance<PsiMethod>()
+            .distinct()
             .filter { method ->
                 method.annotations
                     .filter { it.qualifiedName == fqn }

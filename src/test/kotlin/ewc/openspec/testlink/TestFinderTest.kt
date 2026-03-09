@@ -85,6 +85,26 @@ class TestFinderTest : BasePlatformTestCase() {
         assertEquals(2, results.size)
     }
 
+    @Scenario(capability = "spec-to-test-gutter-link", value = "Filled icon when one test references the scenario")
+    fun `test method with multiple Scenario annotations is returned only once`() {
+        myFixture.addFileToProject(
+            "src/MultiTest.kt",
+            """
+            package test
+            import ewc.openspec.testlink.Scenario
+            class MultiTest {
+                @Scenario(capability = "my-cap", value = "Scenario A")
+                @Scenario(capability = "my-cap", value = "Scenario B")
+                fun testBoth() {}
+            }
+            """.trimIndent()
+        )
+        val resultsA = TestFinder.find(project, "my-cap", "Scenario A")
+        assertEquals(1, resultsA.size)
+        val resultsB = TestFinder.find(project, "my-cap", "Scenario B")
+        assertEquals(1, resultsB.size)
+    }
+
     @Scenario(capability = "spec-to-test-gutter-link", value = "Blank annotation FQN setting produces no gutter icon")
     fun `test returns empty when FQN is blank`() {
         TestToSpecSettings.getInstance(project).state.scenarioAnnotationFqn = ""
